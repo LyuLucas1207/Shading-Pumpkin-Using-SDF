@@ -1,18 +1,25 @@
-Controls 
+================================================================================
+A3 Part 2 - Feature Extension (Part d)
+================================================================================
 
-WASD to move the light/sphere on the xz plane
-QE to move the light up and down
-Click and drag to orbit camera (when applicable)
+Part d extends the assignment with:
 
-1 = Blinn-Phong Snowman
-2 = Ray Marching (jack-o-lantern)
-3-8 = Helmet views (Albedo, MetalRoughness, Emissive, Normal, AO, PBR)
+1) All material helmets recolor
+   The six helmet views (keys 3–8: Albedo, MetalRoughness, Emissive, Normal, AO,
+   and full PBR) use custom colors/tints so the damaged helmet has a consistent
+   custom look across all material maps.
 
----
-Part d - Feature Extension
+2) Pumpkin rotation (Ray Marching only)
+   In Scene 2, the camera orbits around the jack-o-lantern over time (using the
+   time uniform in raymarching.fs.glsl). The view rotates around the pumpkin—
+   this is the pumpkin/camera rotation, not the helmet.
 
-In Scene 2 (Ray Marching), two extensions use the "time" uniform in raymarching.fs.glsl:
+--------------------------------------------------------------------------------
+Controls (same as Part 1)
+--------------------------------------------------------------------------------
+  1–8   Switch scenes (Snowman, Ray Marching, 6 helmet views)
+  WASD  Move light on xz plane
+  Q/E   Move light up/down
+  Mouse Drag  Orbit camera
 
-1) Orbit camera: the ray origin ro is set to ro = ta + vec3(4.0*cos(0.8*time), 1.5, 4.0*sin(0.8*time)) so the camera moves on a circle around the pumpkin center (ta = PUMPKIN_CENTER). The view rotates continuously without user input.
-
-2) Orbiting candle light: the inner light (candle) position is animated on a ring around the pumpkin center. In getColor(), lightPos2 = vec3(0, 1.5, 5) + vec3(orbitRadius*cos(time), 0, orbitRadius*sin(time)) with orbitRadius = 0.45, so the light moves in a horizontal circle inside the jack-o-lantern and the shading/shadows change as it orbits.
+================================================================================

@@ -40,8 +40,9 @@ DIRECTORY STRUCTURE
   part1/   - All parts before the feature extension (Blinn-Phong, Ray Marching,
              PBR helmet textures and materials).
   part2/   - Feature extension (Part d): All helmet material views with custom
-             recoloring; and in Ray Marching (Scene 2), camera orbits around the
-             pumpkin (rotation of view, not helmet).
+             recoloring; and in Ray Marching (Scene 2), pumpkin assembly animation
+             (parts fly in and join) plus camera on a sector path (zoom in then
+             out) around the pumpkin.
 
 
 --------------------------------------------------------------------------------
@@ -51,9 +52,13 @@ NOTES FOR THE MARKER
   1) All material helmets recolor: The six helmet views (Albedo, MetalRoughness,
      Emissive, Normal, AO, and the full PBR material) use modified colors/tints
      so the damaged helmet has a consistent custom look across all maps.
-  2) Pumpkin rotation: In Scene 2 (Ray Marching), the camera orbits around the
-     jack-o-lantern over time (using the time uniform in the shader), so the
-     view rotates around the pumpkin—not the helmet.
+  2) Ray Marching (Scene 2) pumpkin and camera:
+     - Pumpkin assembly: When you switch to scene 2, the eyes, nose, mouth (and
+       teeth) fly in from around the pumpkin and assemble into place. The
+       animation starts from 0 when entering scene 2 (not from app start).
+     - Camera sector path: After a short delay, the camera moves along a
+       sector-shaped path: it zooms in then zooms out, orbiting in that fan
+       shape to film the jack-o-lantern.
 
 
 --------------------------------------------------------------------------------

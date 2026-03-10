@@ -269,25 +269,47 @@ vec2 RectPrism(vec3 p, vec3 c, vec3 dim)
 vec2 Pumpkin(vec3 p) 
 {
     // 南瓜身体：外球
-    vec2 body = Sphere(p, PUMPKIN_CENTER, 0.8);
+    vec2 body = Sphere(p, PUMPKIN_CENTER, 1.0);
     float d = body.x;
 
     // 内部挖空：同心内球，形成南瓜壳（空心）
-    vec2 innerCavity = Sphere(p, PUMPKIN_CENTER, 0.75);
+    vec2 innerCavity = Sphere(p, PUMPKIN_CENTER, 0.9);
     d = subtractionSDF(d, innerCavity.x);
 
-    // 两个三角形眼睛 + 三角形鼻子：从壳上挖掉（作业要求 Two eyes, A nose）
-    vec2 leftEye  = TriPrism(p, PUMPKIN_CENTER + vec3(-0.50, 0.25, -1.05), vec2(0.29, 1.0), 0.0);
-    vec2 rightEye = TriPrism(p, PUMPKIN_CENTER + vec3( 0.50, 0.25, -1.05), vec2(0.29, 1.0), 0.0);
-    vec2 nose     = TriPrism(p, PUMPKIN_CENTER + vec3( 0.0,  0.0,  -1.05), vec2(0.2, 1.0), 0.0);
-    vec2 mouth    = RectPrism(p, PUMPKIN_CENTER + vec3( 0.0, -0.45, -0.78), vec3(0.95, 0.18, 0.35));
+    // Part d: 眼睛、鼻子、嘴巴从四周飞入到当前位置的动画（错开时间）
+    float tLeft  = min(smoothstep(0.0, 0.9, time), 1.0);
+    float tRight = min(smoothstep(0.25, 1.15, time), 1.0);
+    float tNose  = min(smoothstep(0.5, 1.4, time), 1.0);
+    float tMouth = min(smoothstep(0.75, 1.65, time), 1.0);
 
-    // 嘴巴旁四颗三角形牙齿：左→右 倒、正、正、倒
-    vec3 m = PUMPKIN_CENTER + vec3(0.0, -0.45, -0.85);
-    vec2 tooth1 = TriPrism(p, m + vec3(-0.32, 0.0, 0.0), vec2(0.22, 0.4), 180.0);  // 最左，倒
-    vec2 tooth2 = TriPrism(p, m + vec3(-0.21, 0.0, 0.0), vec2(0.22, 0.4), 0.0);   // 左二，正
-    vec2 tooth3 = TriPrism(p, m + vec3( 0.21, 0.0, 0.0), vec2(0.22, 0.4), 0.0);   // 右二，正
-    vec2 tooth4 = TriPrism(p, m + vec3( 0.32, 0.0, 0.0), vec2(0.22, 0.4), 180.0);  // 最右，倒
+    vec3 leftEyeStart  = PUMPKIN_CENTER + vec3(-1.6, 1.25, -0.2);
+    vec3 leftEyeEnd    = PUMPKIN_CENTER + vec3(-0.50, 0.25, -1.05);
+    vec3 rightEyeStart = PUMPKIN_CENTER + vec3(1.6, 1.25, -0.2);
+    vec3 rightEyeEnd   = PUMPKIN_CENTER + vec3(0.50, 0.25, -1.05);
+    vec3 noseStart     = PUMPKIN_CENTER + vec3(0.0, 1.4, -0.4);
+    vec3 noseEnd       = PUMPKIN_CENTER + vec3(0.0, 0.0, -1.05);
+    vec3 mouthStart    = PUMPKIN_CENTER + vec3(0.0, -1.2, -0.78);
+    vec3 mouthEnd      = PUMPKIN_CENTER + vec3(0.0, -0.45, -0.78);
+    vec3 mStart        = PUMPKIN_CENTER + vec3(0.0, -1.2, -0.85);
+    vec3 mEnd          = PUMPKIN_CENTER + vec3(0.0, -0.45, -0.85);
+
+    vec3 leftEyePos  = mix(leftEyeStart, leftEyeEnd, tLeft);
+    vec3 rightEyePos = mix(rightEyeStart, rightEyeEnd, tRight);
+    vec3 nosePos     = mix(noseStart, noseEnd, tNose);
+    vec3 mouthPos    = mix(mouthStart, mouthEnd, tMouth);
+    vec3 m           = mix(mStart, mEnd, tMouth);
+
+    // 两个三角形眼睛 + 三角形鼻子：从壳上挖掉
+    vec2 leftEye  = TriPrism(p, leftEyePos, vec2(0.29, 1.0), 0.0);
+    vec2 rightEye = TriPrism(p, rightEyePos, vec2(0.29, 1.0), 0.0);
+    vec2 nose     = TriPrism(p, nosePos, vec2(0.2, 1.0), 0.0);
+    vec2 mouth    = RectPrism(p, mouthPos, vec3(0.95, 0.18, 0.35));
+
+    // 嘴巴旁四颗三角形牙齿（随嘴巴一起飞入）
+    vec2 tooth1 = TriPrism(p, m + vec3(-0.32, 0.0, 0.0), vec2(0.22, 0.4), 180.0);
+    vec2 tooth2 = TriPrism(p, m + vec3(-0.21, 0.0, 0.0), vec2(0.22, 0.4), 0.0);
+    vec2 tooth3 = TriPrism(p, m + vec3( 0.21, 0.0, 0.0), vec2(0.22, 0.4), 0.0);
+    vec2 tooth4 = TriPrism(p, m + vec3( 0.32, 0.0, 0.0), vec2(0.22, 0.4), 180.0);
 
     d = subtractionSDF(d, leftEye.x);
     d = subtractionSDF(d, rightEye.x);
@@ -299,7 +321,7 @@ vec2 Pumpkin(vec3 p)
     d = subtractionSDF(d, tooth4.x);
 
     // A stem（作业要求）：顶部圆柱，与身体 union，材质 id 3 = 茎
-    vec2 stem = Cylinder(p, PUMPKIN_CENTER + vec3(0.0, 0.85, 0.0), 0.12, 0.2, 0.0);
+    vec2 stem = Cylinder(p, PUMPKIN_CENTER + vec3(0.0, 1.05, 0.0), 0.12, 0.2, 0.0);
     float dist = unionSDF(d, stem.x);
     float id = getMaterial(vec2(d, 2.0), stem);  // 2 = 南瓜, 3 = 茎
 
@@ -391,8 +413,19 @@ vec3 getNormal(vec3 p) {
  */
 vec3 getColor(vec3 p, float id) 
 {
-    vec3 lightPos1 = vec3(3, 5, 2); // sunset
-    vec3 lightPos2 = vec3(0, 1.5, 5); // position candle (centre of pumpkin)
+    // Sunset light rotates around the pumpkin based on orbit time (same delay/speed as camera)
+    float orbitDelay = 5.0;
+    float orbitTime = max(0.0, time - orbitDelay);
+    float sunsetRadius = 4.0;
+    float sunsetHeight = 4.3;
+    float candleRadius = 0.5;
+    float candleHeight = 0.2;
+    // vec3 lightPos1 = vec3(3, 5, 2); // sunset
+    vec3 lightPos1 = PUMPKIN_CENTER + vec3(sunsetRadius * cos(0.8 * orbitTime), sunsetHeight, sunsetRadius * sin(0.8 * orbitTime));
+
+    // Candle light traces a small circle (xz) around a point above pumpkin center
+    //vec3 lightPos2 = vec3(0, 1.5, 5); // position candle (centre of pumpkin
+    vec3 lightPos2 = PUMPKIN_CENTER + vec3(candleRadius * cos(0.8 * orbitTime), candleHeight, candleRadius * sin(0.8 * orbitTime));
 
     vec3 l1 = normalize(lightPos1 - p); 
     vec3 l2 = normalize(lightPos2 - p); 
@@ -468,9 +501,17 @@ void main() {
     vec3 ta = PUMPKIN_CENTER; 
 
     // NOTE: Camera position (you may want to modify this for different views)
-    // vec3 ro = vec3(0, 2, 0); // static
+    vec3 ro = vec3(0, 2, 0); // static
     // vec3 ro = ta + vec3(4.0 * cos(0.2 * camPos.x), 1.5, 4.0 * sin(0.2 * camPos.x)); // orbit control
-    vec3 ro = ta + vec3(4.0 * cos(0.8 * time), 1.5, 4.0 * sin(0.8 * time)); // orbit time
+    // vec3 ro = ta + vec3(4.0 * cos(0.8 * time), 1.5, 4.0 * sin(0.8 * time)); // orbit time
+    // vec3 ro;
+    // float orbitDelay = 5.0;
+    // float orbitTime = max(0.0, time - orbitDelay);
+    // if (orbitTime > 0.0) {
+    //     ro = vec3(3.0 * cos(0.8 * orbitTime), 1.5, 2.0 * sin(0.8 * orbitTime));
+    // } else {
+    //     ro = vec3(0, 2, 0); // static
+    // }
 
     // Compute the camera's coordinate frame (view matrix)
     mat3 ca = setCamera(ro, ta, 0.0); 

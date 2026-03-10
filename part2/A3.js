@@ -28,6 +28,9 @@ const kSpecular = { type: "f", value: 1.0 };
 const shininess = { type: "f", value: 50.0 };
 const ticks = { type: "f", value: 0.0 };
 const resolution = { type: 'v3', value: new THREE.Vector3() };
+// time for raymarching: 0 when entering scene 2, so fly-in animation starts on switch
+const raymarchingTime = { type: "f", value: 0.0 }; //! part d
+let raymarchingStartTicks = 0.0; //! part d
 
 const baseHelmetLight = new THREE.PointLight(0xffffff, 200);
 const helmetLights = [];
@@ -54,7 +57,7 @@ const blinnPhongMaterial = new THREE.ShaderMaterial({
 
 const rayMarchingMaterial = new THREE.ShaderMaterial({
   uniforms: {
-    time: ticks,
+    time: raymarchingTime, //! part d
     resolution: resolution,
     camPos: spherePosition
   }
@@ -277,8 +280,10 @@ function checkKeyboard()
 
   if (keyboard.pressed("1"))
     mode = shaders.BLINNPHONG.key;
-  else if (keyboard.pressed("2"))
+  else if (keyboard.pressed("2")) {
     mode = shaders.RAYMARCHING.key;
+    raymarchingStartTicks = ticks.value; //! part d
+  }
   else if (keyboard.pressed("3"))
     mode = shaders.HELMET_ALBEDO.key;
   //*====================================(c)====================================*/
@@ -312,6 +317,7 @@ function checkKeyboard()
   if (mode == shaders.RAYMARCHING.key) {
     const canvas = renderer.domElement;
     resolution.value.set(canvas.width, canvas.height, 1);
+    raymarchingTime.value = ticks.value - raymarchingStartTicks; //! part d
   } else {
     helmetLights.forEach(function (light)
     {

@@ -9,10 +9,14 @@ Part d extends the assignment with:
    and full PBR) use custom colors/tints so the damaged helmet has a consistent
    custom look across all material maps.
 
-2) Pumpkin rotation (Ray Marching only)
-   In Scene 2, the camera orbits around the jack-o-lantern over time (using the
-   time uniform in raymarching.fs.glsl). The view rotates around the pumpkin—
-   this is the pumpkin/camera rotation, not the helmet.
+2) Ray Marching (Scene 2) — pumpkin assembly + camera sector path
+   - Pumpkin assembly: When you press 2 to enter Scene 2, the eyes, nose,
+     mouth, and teeth fly in from around the pumpkin and assemble into their
+     final positions. The animation starts from the beginning when you switch to
+     scene 2 (time resets on scene entry).
+   - Camera sector path: After a delay, the camera moves along a sector-shaped
+     path: it zooms in then zooms out, orbiting in that fan shape to film the
+     jack-o-lantern.
 
 --------------------------------------------------------------------------------
 Controls (same as Part 1)

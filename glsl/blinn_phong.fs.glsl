@@ -18,21 +18,12 @@ uniform vec3 spherePosition;
 in vec3 interpolatedNormal;
 in vec3 viewPosition;
 in vec3 worldPosition;
-in vec3 lightPositionView;
+
 
 void main() {
-    //*====================================(a)====================================*/
-    // Normal, light direction, view direction (camera at origin in view space)
-    vec3 N = normalize(interpolatedNormal);
-    vec3 L = normalize(lightPositionView - viewPosition);
-    vec3 V = normalize(-viewPosition);
-    vec3 H = normalize(L + V);
-
-    // Blinn-Phong: ambient + diffuse + specular
-    vec3 ambient = kAmbient * ambientColor;
-    vec3 diffuse = kDiffuse * diffuseColor * max(dot(N, L), 0.0);
-    vec3 specular = kSpecular * specularColor * pow(max(dot(N, H), 0.0), shininess);
-
-    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
-    //*====================================(a)====================================*/
+    // TODO:
+    // HINT: compute the following - light direction, ambient + diffuse + specular component,
+    // then set the final color as a combination of these components
+    
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

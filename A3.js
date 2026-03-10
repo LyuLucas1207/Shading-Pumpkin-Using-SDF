@@ -64,19 +64,25 @@ const rayMarchingMaterial = new THREE.ShaderMaterial({
 
 // TODO: implement helmetMetalRoughnessMap, helmetEmissiveMap, helmetNormalMap, helmetAOMap
 // similarly to how helmetAlbedoMap is implemented
+//*====================================(c)====================================
 const helmetAlbedoMap = new THREE.TextureLoader().load( 'gltf/Default_albedo.jpg' );
 helmetAlbedoMap.colorSpace = THREE.SRGBColorSpace;
 helmetAlbedoMap.flipY = false;
-helmetAlbedoMap.wrapS = 1000;
-helmetAlbedoMap.wrapT = 1000;
+helmetAlbedoMap.wrapS = THREE.RepeatWrapping; // 1000
+helmetAlbedoMap.wrapT = THREE.RepeatWrapping; // 1000
 
-const helmetMetalRoughnessMap = null;
-
-const helmetEmissiveMap = null;
-
-const helmetNormalMap = null;
-
-const helmetAOMap = null;
+function loadHelmetTexture(path) {
+  const t = new THREE.TextureLoader().load(path);
+  t.flipY = false;
+  t.wrapS = THREE.RepeatWrapping; // 1000
+  t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+const helmetMetalRoughnessMap = loadHelmetTexture('gltf/Default_metalRoughness.jpg');
+const helmetEmissiveMap = loadHelmetTexture('gltf/Default_emissive.jpg');
+const helmetNormalMap = loadHelmetTexture('gltf/Default_normal.jpg');
+const helmetAOMap = loadHelmetTexture('gltf/Default_AO.jpg');
+//*====================================(c)====================================*/
 // ----------------------------------------------------------------------------------------------------------------
 
 // ---------------------------PBR material for helmet--------------------------------------------------------------
@@ -87,34 +93,50 @@ const helmetAlbedoMaterial = new THREE.MeshBasicMaterial({
   map: helmetAlbedoMap,
   toneMapped: false,
 });
-
-const helmetMetalRoughnessMaterial = null;
-
-const helmetEmissiveMaterial = null;
-
-const helmetNormalMaterial = null;
-
-const helmetAOMaterial = null;
-
-// This is the final complete PBR material
-const helmetPBRMaterial = new THREE.MeshStandardMaterial({
-  // TODO: pass texture maps to the material. Note that
-  // both metalnessMap and roughnessMap should be set to the same
-  // texture map
+//*====================================(c)====================================*/
+const helmetMetalRoughnessMaterial = new THREE.MeshBasicMaterial({
+  map: helmetMetalRoughnessMap,
+  toneMapped: false,
 });
+const helmetEmissiveMaterial = new THREE.MeshBasicMaterial({
+  map: helmetEmissiveMap,
+  toneMapped: false,
+});
+const helmetNormalMaterial = new THREE.MeshBasicMaterial({
+  map: helmetNormalMap,
+  toneMapped: false,
+});
+const helmetAOMaterial = new THREE.MeshBasicMaterial({
+  map: helmetAOMap,
+  toneMapped: false,
+});
+//*====================================(c)====================================*/
 // TODO: set the material's emissive color and metalness, you can play around these values
 // helmetPBRMaterial.emissive = ;
 // helmetPBRMaterial.metalness = ;
+//*====================================(c)====================================*/
+const helmetPBRMaterial = new THREE.MeshStandardMaterial({
+  map: helmetAlbedoMap,
+  metalnessMap: helmetMetalRoughnessMap, // metalnessMap and roughnessMap use the same texture
+  roughnessMap: helmetMetalRoughnessMap, // roughnessMap is used to add roughness to the helmet
+  emissiveMap: helmetEmissiveMap, // emissiveMap is used to add emission to the helmet
+  normalMap: helmetNormalMap, // normalMap is used to add detail to the helmet
+  aoMap: helmetAOMap, // aoMap is used to add ambient occlusion to the helmet
+});
+helmetPBRMaterial.emissive = new THREE.Color(0x000000); // emissiveMap is used to add emission to the helmet
+helmetPBRMaterial.metalness = 1.0; // metalnessMap is used to add metalness to the helmet
+helmetPBRMaterial.roughness = 1.0; // roughnessMap is used to add roughness to the helmet
 
-// TODO: enable this after implemented
 const helmetMaterials = [
   helmetAlbedoMaterial,
-  // helmetMetalRoughnessMaterial,
-  // helmetEmissiveMaterial,
-  // helmetNormalMaterial,
-  // helmetAOMaterial,
+  helmetMetalRoughnessMaterial,
+  helmetEmissiveMaterial,
+  helmetNormalMaterial,
+  helmetAOMaterial,
   helmetPBRMaterial,
 ];
+
+//*====================================(c)====================================*/
 
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -225,17 +247,18 @@ function checkKeyboard() {
     mode = shaders.BLINNPHONG.key;
   else if (keyboard.pressed("2"))
     mode = shaders.RAYMARCHING.key;
-  else if (keyboard.pressed("3"))
+  else   if (keyboard.pressed("3"))
     mode = shaders.HELMET_ALBEDO.key;
-  // TODO: enable this once implemented
-  // else if (keyboard.pressed("4"))
-  //   mode = shaders.HELMET_METAL_ROUGHNESS.key;
-  // else if (keyboard.pressed("5"))
-  //   mode = shaders.HELMET_EMISSIVE.key;
-  // else if (keyboard.pressed("6"))
-  //   mode = shaders.HELMET_NORMAL.key;
-  // else if (keyboard.pressed("7"))
-  //   mode = shaders.HELMET_AO.key;
+  //*====================================(c)====================================*/
+  else if (keyboard.pressed("4"))
+    mode = shaders.HELMET_METAL_ROUGHNESS.key;
+  else if (keyboard.pressed("5"))
+    mode = shaders.HELMET_EMISSIVE.key;
+  else if (keyboard.pressed("6"))
+    mode = shaders.HELMET_NORMAL.key;
+  else if (keyboard.pressed("7"))
+    mode = shaders.HELMET_AO.key;
+  //*====================================(c)====================================*/
   else if (keyboard.pressed("8"))
     mode = shaders.HELMET_PBR.key;
 

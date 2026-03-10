@@ -33,6 +33,12 @@ Part 1 & Part 2 (shared):
   Q / E          - Move the light up / down
   Mouse          - Click and drag to orbit camera (when applicable)
 
+  Part 2 only, when in Scene 2 (Ray Marching): four buttons appear in the top-right:
+  - Sun rotate   Toggle sunset light rotating around the pumpkin (on/off).
+  - Candle rotate Toggle candle light moving in a small circle (on/off).
+  - View sector   Toggle camera sector path (on/off).
+  - Reset         Restart the scene-2 animation (fly-in and orbit time reset).
+
 
 --------------------------------------------------------------------------------
 DIRECTORY STRUCTURE
@@ -59,6 +65,9 @@ NOTES FOR THE MARKER
      - Camera sector path: After a short delay, the camera moves along a
        sector-shaped path: it zooms in then zooms out, orbiting in that fan
        shape to film the jack-o-lantern.
+     - Scene 2 only: four buttons (Sun rotate, Candle rotate, View sector,
+       Reset) appear in the top-right to toggle each effect or reset the
+       animation; they are hidden when not in Scene 2.
 
 
 --------------------------------------------------------------------------------

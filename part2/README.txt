@@ -17,6 +17,10 @@ Part d extends the assignment with:
    - Camera sector path: After a delay, the camera moves along a sector-shaped
      path: it zooms in then zooms out, orbiting in that fan shape to film the
      jack-o-lantern.
+   - When in Scene 2 only, four buttons appear in the top-right corner:
+     Sun rotate, Candle rotate, View sector, Reset. They are hidden in other
+     scenes. Sun/Candle/View sector toggle the corresponding effect on or off;
+     Reset restarts the scene-2 animation (time resets).
 
 --------------------------------------------------------------------------------
 Controls (same as Part 1)
@@ -25,5 +29,7 @@ Controls (same as Part 1)
   WASD  Move light on xz plane
   Q/E   Move light up/down
   Mouse Drag  Orbit camera
+
+  Scene 2 only (top-right buttons): Sun rotate | Candle rotate | View sector | Reset
 
 ================================================================================

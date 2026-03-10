@@ -1,7 +1,10 @@
 
 uniform vec3 resolution;   
 uniform float time;   
-uniform vec3 camPos;   
+uniform vec3 camPos;
+uniform float uSunRotate;
+uniform float uCandleRotate;
+uniform float uCameraSector;   
 
 // NOTE: modify these to control performance/quality tradeoff
 #define MAX_STEPS 50 // max number of steps to take along ray
@@ -413,19 +416,20 @@ vec3 getNormal(vec3 p) {
  */
 vec3 getColor(vec3 p, float id) 
 {
-    // Sunset light rotates around the pumpkin based on orbit time (same delay/speed as camera)
     float orbitDelay = 5.0;
     float orbitTime = max(0.0, time - orbitDelay);
     float sunsetRadius = 4.0;
     float sunsetHeight = 4.3;
     float candleRadius = 0.5;
     float candleHeight = 0.2;
-    // vec3 lightPos1 = vec3(3, 5, 2); // sunset
-    vec3 lightPos1 = PUMPKIN_CENTER + vec3(sunsetRadius * cos(0.8 * orbitTime), sunsetHeight, sunsetRadius * sin(0.8 * orbitTime));
 
-    // Candle light traces a small circle (xz) around a point above pumpkin center
-    //vec3 lightPos2 = vec3(0, 1.5, 5); // position candle (centre of pumpkin
-    vec3 lightPos2 = PUMPKIN_CENTER + vec3(candleRadius * cos(0.8 * orbitTime), candleHeight, candleRadius * sin(0.8 * orbitTime));
+    vec3 lightPos1Static = vec3(3.0, 5.0, 2.0);
+    vec3 lightPos1Orbit = PUMPKIN_CENTER + vec3(sunsetRadius * cos(0.8 * orbitTime), sunsetHeight, sunsetRadius * sin(0.8 * orbitTime));
+    vec3 lightPos1 = mix(lightPos1Static, lightPos1Orbit, uSunRotate);
+
+    vec3 lightPos2Static = vec3(0.0, 1.5, 5.0);
+    vec3 lightPos2Orbit = PUMPKIN_CENTER + vec3(candleRadius * cos(0.8 * orbitTime), candleHeight, candleRadius * sin(0.8 * orbitTime));
+    vec3 lightPos2 = mix(lightPos2Static, lightPos2Orbit, uCandleRotate);
 
     vec3 l1 = normalize(lightPos1 - p); 
     vec3 l2 = normalize(lightPos2 - p); 
@@ -500,18 +504,11 @@ void main() {
     // NOTE: Look-at target (our pumpkin is centered here)
     vec3 ta = PUMPKIN_CENTER; 
 
-    // NOTE: Camera position (you may want to modify this for different views)
-    vec3 ro = vec3(0, 2, 0); // static
-    // vec3 ro = ta + vec3(4.0 * cos(0.2 * camPos.x), 1.5, 4.0 * sin(0.2 * camPos.x)); // orbit control
-    // vec3 ro = ta + vec3(4.0 * cos(0.8 * time), 1.5, 4.0 * sin(0.8 * time)); // orbit time
-    // vec3 ro;
-    // float orbitDelay = 5.0;
-    // float orbitTime = max(0.0, time - orbitDelay);
-    // if (orbitTime > 0.0) {
-    //     ro = vec3(3.0 * cos(0.8 * orbitTime), 1.5, 2.0 * sin(0.8 * orbitTime));
-    // } else {
-    //     ro = vec3(0, 2, 0); // static
-    // }
+    vec3 roStatic = vec3(0.0, 2.0, 0.0);
+    float orbitDelay = 5.0;
+    float orbitTime = max(0.0, time - orbitDelay);
+    vec3 roSector = orbitTime > 0.0 ? vec3(3.0 * cos(0.8 * orbitTime), 1.5, 2.0 * sin(0.8 * orbitTime)) : roStatic;
+    vec3 ro = mix(roStatic, roSector, uCameraSector);
 
     // Compute the camera's coordinate frame (view matrix)
     mat3 ca = setCamera(ro, ta, 0.0); 

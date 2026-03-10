@@ -5,17 +5,42 @@
   <title>CPSC 314 Assignment 3 2024WT2</title>
   <style>
     body {
-      /* Remove the default padding and margin around the canvas */
       padding: 0;
       margin: 0;
-      /* Disable scrolling */
       overflow: hidden;
     }
+    #ray-controls {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+    }
+    #ray-controls.visible { display: flex; }
+    #ray-controls button {
+      padding: 6px 12px;
+      min-width: 88px;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid #666;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.9);
+    }
+    #ray-controls button:hover { background: #eee; }
+    #ray-controls button.active { background: #c8e6c9; border-color: #2e7d32; }
   </style>
 </head>
 
 <body>
   <canvas id="webglcanvas"></canvas>
+  <div id="ray-controls">
+    <button id="btn-sun" type="button">Sun rotate</button>
+    <button id="btn-candle" type="button">Candle rotate</button>
+    <button id="btn-camera" type="button">View sector</button>
+    <button id="btn-reset" type="button">Reset</button>
+  </div>
   <script src="js/WebGL.js"></script>
   <script type="module" src="js/three.module.js"></script>
   <script type="module" src="js/setup.js"></script>

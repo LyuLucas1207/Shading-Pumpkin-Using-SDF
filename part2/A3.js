@@ -31,6 +31,10 @@ const resolution = { type: 'v3', value: new THREE.Vector3() };
 // time for raymarching: 0 when entering scene 2, so fly-in animation starts on switch
 const raymarchingTime = { type: "f", value: 0.0 }; //! part d
 let raymarchingStartTicks = 0.0; //! part d
+// toggles for scene 2: sun rotate, candle rotate, camera sector (1=on, 0=off)
+const uSunRotate = { type: "f", value: 1.0 };
+const uCandleRotate = { type: "f", value: 1.0 };
+const uCameraSector = { type: "f", value: 1.0 };
 
 const baseHelmetLight = new THREE.PointLight(0xffffff, 200);
 const helmetLights = [];
@@ -57,9 +61,12 @@ const blinnPhongMaterial = new THREE.ShaderMaterial({
 
 const rayMarchingMaterial = new THREE.ShaderMaterial({
   uniforms: {
-    time: raymarchingTime, //! part d
+    time: raymarchingTime,
     resolution: resolution,
-    camPos: spherePosition
+    camPos: spherePosition,
+    uSunRotate: uSunRotate,
+    uCandleRotate: uCandleRotate,
+    uCameraSector: uCameraSector
   }
 });
 
@@ -314,6 +321,9 @@ function checkKeyboard()
   else if (keyboard.pressed("Q"))
     spherePosition.value.y += 0.3;
 
+  var rayControls = document.getElementById("ray-controls");
+  if (rayControls) rayControls.classList.toggle("visible", mode === shaders.RAYMARCHING.key);
+
   if (mode == shaders.RAYMARCHING.key) {
     const canvas = renderer.domElement;
     resolution.value.set(canvas.width, canvas.height, 1);
@@ -355,3 +365,30 @@ function update()
 
 // Start the animation loop.
 update();
+
+// Ray Marching (scene 2) control buttons: sun rotate, candle rotate, view sector, reset
+function setupRayControls() {
+  const btnSun = document.getElementById("btn-sun");
+  const btnCandle = document.getElementById("btn-candle");
+  const btnCamera = document.getElementById("btn-camera");
+  const btnReset = document.getElementById("btn-reset");
+
+  function toggle(uniform, btn) {
+    return function () {
+      uniform.value = uniform.value === 1.0 ? 0.0 : 1.0;
+      btn.classList.toggle("active", uniform.value === 1.0);
+    };
+  }
+  btnSun.addEventListener("click", toggle(uSunRotate, btnSun));
+  btnCandle.addEventListener("click", toggle(uCandleRotate, btnCandle));
+  btnCamera.addEventListener("click", toggle(uCameraSector, btnCamera));
+
+  btnReset.addEventListener("click", function () {
+    raymarchingStartTicks = ticks.value;
+  });
+
+  btnSun.classList.add("active");
+  btnCandle.classList.add("active");
+  btnCamera.classList.add("active");
+}
+setupRayControls();

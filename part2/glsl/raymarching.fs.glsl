@@ -8,7 +8,7 @@ uniform vec3 camPos;
 #define MAX_DIST 50. // max distance to travel along ray
 
 #define HIT_DIST .01 // distance to consider as "hit" to surface
-#define PUMPKIN_CENTER vec3(0,1,5) 
+#define PUMPKIN_CENTER vec3(0,0.7,5) 
 
 /*
 SDF: Signed Distance Function
@@ -269,11 +269,11 @@ vec2 RectPrism(vec3 p, vec3 c, vec3 dim)
 vec2 Pumpkin(vec3 p) 
 {
     // 南瓜身体：外球
-    vec2 body = Sphere(p, PUMPKIN_CENTER, 1.0);
+    vec2 body = Sphere(p, PUMPKIN_CENTER, 0.8);
     float d = body.x;
 
     // 内部挖空：同心内球，形成南瓜壳（空心）
-    vec2 innerCavity = Sphere(p, PUMPKIN_CENTER, 0.90);
+    vec2 innerCavity = Sphere(p, PUMPKIN_CENTER, 0.75);
     d = subtractionSDF(d, innerCavity.x);
 
     // 两个三角形眼睛 + 三角形鼻子：从壳上挖掉（作业要求 Two eyes, A nose）
@@ -299,7 +299,7 @@ vec2 Pumpkin(vec3 p)
     d = subtractionSDF(d, tooth4.x);
 
     // A stem（作业要求）：顶部圆柱，与身体 union，材质 id 3 = 茎
-    vec2 stem = Cylinder(p, PUMPKIN_CENTER + vec3(0.0, 1.05, 0.0), 0.12, 0.2, 0.0);
+    vec2 stem = Cylinder(p, PUMPKIN_CENTER + vec3(0.0, 0.85, 0.0), 0.12, 0.2, 0.0);
     float dist = unionSDF(d, stem.x);
     float id = getMaterial(vec2(d, 2.0), stem);  // 2 = 南瓜, 3 = 茎
 
@@ -468,9 +468,9 @@ void main() {
     vec3 ta = PUMPKIN_CENTER; 
 
     // NOTE: Camera position (you may want to modify this for different views)
-    vec3 ro = vec3(0, 2, 0); // static
+    // vec3 ro = vec3(0, 2, 0); // static
     // vec3 ro = ta + vec3(4.0 * cos(0.2 * camPos.x), 1.5, 4.0 * sin(0.2 * camPos.x)); // orbit control
-    // vec3 ro = ta + vec3(4.0 * cos(0.8 * time), 1.5, 4.0 * sin(0.8 * time)); // orbit time
+    vec3 ro = ta + vec3(4.0 * cos(0.8 * time), 1.5, 4.0 * sin(0.8 * time)); // orbit time
 
     // Compute the camera's coordinate frame (view matrix)
     mat3 ca = setCamera(ro, ta, 0.0); 

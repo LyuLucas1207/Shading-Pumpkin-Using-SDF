@@ -27,7 +27,7 @@ const kDiffuse = { type: "f", value: 0.6 };
 const kSpecular = { type: "f", value: 1.0 };
 const shininess = { type: "f", value: 50.0 };
 const ticks = { type: "f", value: 0.0 };
-const resolution =  { type: 'v3', value: new THREE.Vector3() };
+const resolution = { type: 'v3', value: new THREE.Vector3() };
 
 const baseHelmetLight = new THREE.PointLight(0xffffff, 200);
 const helmetLights = [];
@@ -65,13 +65,14 @@ const rayMarchingMaterial = new THREE.ShaderMaterial({
 // TODO: implement helmetMetalRoughnessMap, helmetEmissiveMap, helmetNormalMap, helmetAOMap
 // similarly to how helmetAlbedoMap is implemented
 //*====================================(c)====================================
-const helmetAlbedoMap = new THREE.TextureLoader().load( 'gltf/Default_albedo.jpg' );
+const helmetAlbedoMap = new THREE.TextureLoader().load('gltf/Default_albedo.jpg');
 helmetAlbedoMap.colorSpace = THREE.SRGBColorSpace;
 helmetAlbedoMap.flipY = false;
 helmetAlbedoMap.wrapS = THREE.RepeatWrapping; // 1000
 helmetAlbedoMap.wrapT = THREE.RepeatWrapping; // 1000
 
-function loadHelmetTexture(path) {
+function loadHelmetTexture(path)
+{
   const t = new THREE.TextureLoader().load(path);
   t.flipY = false;
   t.wrapS = THREE.RepeatWrapping; // 1000
@@ -127,6 +128,26 @@ helmetPBRMaterial.emissive = new THREE.Color(0x000000); // emissiveMap is used t
 helmetPBRMaterial.metalness = 1.0; // metalnessMap is used to add metalness to the helmet
 helmetPBRMaterial.roughness = 1.0; // roughnessMap is used to add roughness to the helmet
 
+//*====================================(d)====================================*/
+const setPartD = (Material) =>
+{
+  // Material.emissiveIntensity = 0;
+  Material.color = new THREE.Color(
+    1.0, // Red component
+    0.0, // Green component
+    0.0  // Blue component
+  );//! part d
+}
+setPartD(helmetPBRMaterial);
+setPartD(helmetAlbedoMaterial);
+setPartD(helmetMetalRoughnessMaterial);
+setPartD(helmetEmissiveMaterial);
+setPartD(helmetNormalMaterial);
+setPartD(helmetAOMaterial);
+setPartD(helmetPBRMaterial);
+//*====================================(d)====================================*/
+
+
 const helmetMaterials = [
   helmetAlbedoMaterial,
   helmetMetalRoughnessMaterial,
@@ -151,7 +172,8 @@ const shaderFiles = [
   'glsl/raymarching.fs.glsl',
 ];
 
-new SourceLoader().load(shaderFiles, function (shaders) {
+new SourceLoader().load(shaderFiles, function (shaders)
+{
   sphereMaterial.vertexShader = shaders['glsl/sphere.vs.glsl'];
   sphereMaterial.fragmentShader = shaders['glsl/sphere.fs.glsl'];
 
@@ -188,7 +210,7 @@ for (let shader of Object.values(shaders)) {
     scene.add(new THREE.Mesh(plane, shaders.RAYMARCHING.material));
   } else {
     ({ scene, camera, worldFrame } = createScene(canvas, renderer));
-    
+
     // Create the main sphere geometry (light source)
     // https://threejs.org/docs/#api/en/geometries/SphereGeometry
     const sphereGeometry = new THREE.SphereGeometry(1.0, 32.0, 32.0);
@@ -199,16 +221,23 @@ for (let shader of Object.values(shaders)) {
   }
 
   if (shader.type === 'helmet') {
-    await loadGLTFAsync(['gltf/DamagedHelmet.glb'], function(models) {
+    await loadGLTFAsync(['gltf/DamagedHelmet.glb'], function (models)
+    {
       const helmet = models[0].scene;
       helmet.position.set(0, 0, -10.0);
       helmet.scale.set(7, 7, 7);
-      helmet.traverse(function(child) {
+      helmet.traverse(function (child)
+      {
         if (child instanceof THREE.Mesh) {
           child.material = shader.material;
         }
       });
       scene.add(helmet);
+      // Expose for Part d: in Console type "Group" or "helmetGroup", then expand Group → children → 0 → material(s)
+      if (typeof window !== 'undefined') {
+        window.Group = helmet;
+        window.helmetGroup = helmet;
+      }
     });
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 3.0);
@@ -220,10 +249,12 @@ for (let shader of Object.values(shaders)) {
     scene.add(pointLight);
     helmetLights.push(pointLight);
   } else if (shader.type === 'snowman') {
-    await loadOBJAsync(['obj/snowman.obj'], function(models) {
+    await loadOBJAsync(['obj/snowman.obj'], function (models)
+    {
       const snowman = models[0];
-      snowman.traverse( function ( child ) {
-        if ( child instanceof THREE.Mesh ) {
+      snowman.traverse(function (child)
+      {
+        if (child instanceof THREE.Mesh) {
           child.material = shader.material;
         }
       });
@@ -241,13 +272,14 @@ for (let shader of Object.values(shaders)) {
 
 // Listen to keyboard events.
 const keyboard = new THREEx.KeyboardState();
-function checkKeyboard() {
+function checkKeyboard()
+{
 
   if (keyboard.pressed("1"))
     mode = shaders.BLINNPHONG.key;
   else if (keyboard.pressed("2"))
     mode = shaders.RAYMARCHING.key;
-  else   if (keyboard.pressed("3"))
+  else if (keyboard.pressed("3"))
     mode = shaders.HELMET_ALBEDO.key;
   //*====================================(c)====================================*/
   else if (keyboard.pressed("4"))
@@ -276,12 +308,13 @@ function checkKeyboard() {
     spherePosition.value.y -= 0.3;
   else if (keyboard.pressed("Q"))
     spherePosition.value.y += 0.3;
-  
+
   if (mode == shaders.RAYMARCHING.key) {
     const canvas = renderer.domElement;
     resolution.value.set(canvas.width, canvas.height, 1);
   } else {
-     helmetLights.forEach(function(light) {
+    helmetLights.forEach(function (light)
+    {
       light.position.set(
         spherePosition.value.x,
         spherePosition.value.y,
@@ -293,7 +326,8 @@ function checkKeyboard() {
   // The following tells three.js that some uniforms might have changed
   sphereMaterial.needsUpdate = true;
   blinnPhongMaterial.needsUpdate = true;
-  helmetMaterials.forEach(function(material) {
+  helmetMaterials.forEach(function (material)
+  {
     material.needsUpdate = true;
   });
   rayMarchingMaterial.needsUpdate = true;
@@ -302,7 +336,8 @@ function checkKeyboard() {
 let clock = new THREE.Clock;
 
 // Setup update callback
-function update() {
+function update()
+{
   checkKeyboard();
   ticks.value += clock.getDelta();
 

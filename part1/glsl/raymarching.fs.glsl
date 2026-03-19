@@ -174,6 +174,7 @@ vec2 Cylinder(vec3 p, vec3 c, float r, float h, float angle)
 {
     /**
      * TODO: Implement the signed distance function for a cylinder.
+     * !The distance between a point and a cylinder is the length of the vector from the point to the center of the cylinder minus the radius of the cylinder
      */
 
     vec3 cp = p - c; // distance from the center of the cylinder to the point
@@ -216,6 +217,7 @@ vec2 TriPrism( vec3 p, vec3 c, vec2 dim, float angle )
 {
     /**
      * TODO: Implement the signed distance function for a triangular prism.
+     * !The distance between a point and a triangular prism is the maximum of the distance between the point and the plane of the prism, and the distance between the point and the edge of the prism
      */
     // Triangular prism SDF (Inigo Quilez): triangle in xy, extrusion along z.
     // dim.x = triangle size, dim.y = extrusion length (full). 0.866025 ≈ sqrt(3)/2.
@@ -246,6 +248,7 @@ vec2 RectPrism(vec3 p, vec3 c, vec3 dim)
 {
     /**
      * TODO: Implement the signed distance function for a rectangular prism.
+     * !The distance between a point and a rectangular prism is the length of the vector from the point to the center of the prism minus the half of the dimensions of the prism
      */
     vec3 cp = p - c;
     vec3 q = abs(cp) - dim * 0.5; // half the dimensions of the prism

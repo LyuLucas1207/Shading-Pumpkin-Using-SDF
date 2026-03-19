@@ -64,13 +64,14 @@ const rayMarchingMaterial = new THREE.ShaderMaterial({
 
 // TODO: implement helmetMetalRoughnessMap, helmetEmissiveMap, helmetNormalMap, helmetAOMap
 // similarly to how helmetAlbedoMap is implemented
-//*====================================(c)====================================
+
 const helmetAlbedoMap = new THREE.TextureLoader().load( 'gltf/Default_albedo.jpg' );
 helmetAlbedoMap.colorSpace = THREE.SRGBColorSpace;
 helmetAlbedoMap.flipY = false;
 helmetAlbedoMap.wrapS = THREE.RepeatWrapping; // 1000
 helmetAlbedoMap.wrapT = THREE.RepeatWrapping; // 1000
 
+//*====================================(c)====================================
 function loadHelmetTexture(path) {
   const t = new THREE.TextureLoader().load(path);
   t.flipY = false;
